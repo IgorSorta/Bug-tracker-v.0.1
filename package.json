@@ -1,0 +1,22 @@
+{
+    "name": "bug-tracker",
+    "version": "1.0.0",
+    "description": "Bug tracker web application",
+    "main": "app.js",
+    "scripts": {
+        "start": "nodemon src/app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "Igor K",
+    "license": "ISC",
+    "dependencies": {
+        "apollo-server": "^2.15.1",
+        "apollo-server-express": "^2.15.1",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "graphql": "^15.3.0",
+        "mysql2": "^2.1.0",
+        "sequelize": "^6.3.3"
+    }
+}
