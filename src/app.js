@@ -5,7 +5,7 @@ const {
     ApolloServer
 } = require('apollo-server-express');
 
-const main = require('./models/index');
+const models = require('./models/index');
 const schema = require('./schema/index');
 const resolvers = require('./resolvers/index');
 const {
@@ -17,9 +17,8 @@ const app = express();
 const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    main,
     context: {
-        main,
+        models,
         me: users[1]
     },
 

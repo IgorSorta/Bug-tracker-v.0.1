@@ -6,25 +6,38 @@ let {
 
 module.exports = {
     Query: {
-        messages: () => Object.values(main),
+        messages: (parent, args, {
+            models
+        }) => Object.values(models.main),
         message: (parent, {
             id
-        }) => main[id],
-        bugs: () => Object.values(bugs),
+        }, {
+            models
+        }) => models.main[id],
+        bugs: (parent, args, {
+            models
+        }) => Object.values(models.bugs),
         bug: (parent, {
             id
-        }) => bugs[id],
-        users: () => Object.values(users),
+        }, {
+            models
+        }) => models.bugs[id],
+        users: (parent, args, {
+            models
+        }) => Object.values(models.users),
         user: (parent, {
             id
-        }) => users[id],
+        }, {
+            models
+        }) => models.users[id],
 
     },
     Mutation: {
         createMessage: (parent, {
             text
         }, {
-            me
+            me,
+            models
         }) => {
             const id = Math.floor(Math.random() * 100);
 
@@ -34,8 +47,8 @@ module.exports = {
                 text
             };
 
-            main[id] = message;
-            users[me.id].messageIds.push(id);
+            models.main[id] = message;
+            models.users[me.id].messageIds.push(id);
 
             return message;
         },
@@ -43,7 +56,8 @@ module.exports = {
             title,
             description
         }, {
-            me
+            me,
+            models
         }) => {
             const id = Math.floor(Math.random() * 1001);
 
@@ -54,13 +68,15 @@ module.exports = {
                 description
             };
 
-            bugs[id] = bug;
-            users[me.id].bugIds.push(id);
+            models.bugs[id] = bug;
+            models.users[me.id].bugIds.push(id);
 
             return bug;
         },
         deleteMessage: (parent, {
             id
+        }, {
+            models
         }) => {
             const {
                 [id]: message, ...otherMessages
@@ -70,12 +86,14 @@ module.exports = {
                 return false;
             }
 
-            main = otherMessages;
+            models.main = otherMessages;
 
             return true;
         },
         deleteBug: (parent, {
             id
+        }, {
+            models
         }) => {
             const {
                 [id]: bug, ...otherBugs
@@ -85,26 +103,34 @@ module.exports = {
                 return false;
             }
 
-            bugs = otherBugs;
+            models.bugs = otherBugs;
             return true;
         },
     },
     Message: {
-        user: (message) => {
-            return users[message.userId];
+        user: (message, args, {
+            models
+        }) => {
+            return models.users[message.userId];
         }
     },
     Bug: {
-        user: (bug) => {
-            return users[bug.userId];
+        user: (bug, args, {
+            models
+        }) => {
+            return models.users[bug.userId];
         }
     },
     User: {
-        messages: (user) => {
-            return Object.values(main).filter(message => message.userId === user.id);
+        messages: (user, args, {
+            models
+        }) => {
+            return Object.values(models.main).filter(message => message.userId === user.id);
         },
-        bugs: (user) => {
-            return Object.values(bugs).filter(bug => bug.userId === user.id);
+        bugs: (user, args, {
+            models
+        }) => {
+            return Object.values(models.bugs).filter(bug => bug.userId === user.id);
         }
     }
 };
