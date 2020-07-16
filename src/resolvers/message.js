@@ -1,57 +1,45 @@
 module.exports = {
     Query: {
-        messages: (parent, args, {
+        messages: async (parent, args, {
             models
-        }) => Object.values(models.main),
-        message: (parent, {
+        }) => {
+            return await models.Message.findAll();
+        },
+        message: async (parent, {
             id
         }, {
             models
-        }) => models.main[id],
+        }) => await models.Message.findByPk(id),
     },
     Mutation: {
-        createMessage: (parent, {
+        createMessage: async (parent, {
             text
         }, {
             me,
             models
         }) => {
-            const id = Math.floor(Math.random() * 100);
-
-            const message = {
-                id,
+            return await models.Message.create({
+                text,
                 userId: me.id,
-                text
-            };
-
-            models.main[id] = message;
-            models.users[me.id].messageIds.push(id);
-
-            return message;
+            });
         },
-        deleteMessage: (parent, {
+        deleteMessage: async (parent, {
             id
         }, {
             models
         }) => {
-            const {
-                [id]: message, ...otherMessages
-            } = models.main;
-
-            if (!message) {
-                return false;
-            }
-
-            models.main = otherMessages;
-
-            return true;
+            return await models.Message.destroy({
+                where: {
+                    id
+                }
+            });
         },
     },
     Message: {
-        user: (message, args, {
+        user: async (message, args, {
             models
         }) => {
-            return models.users[message.userId];
+            return await models.User.findByPk(message.userId);
         }
     },
 };

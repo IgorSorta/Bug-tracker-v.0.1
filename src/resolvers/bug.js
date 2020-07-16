@@ -1,63 +1,52 @@
+const message = require("./message");
+
 module.exports = {
     Query: {
 
-        bugs: (parent, args, {
+        bugs: async (parent, args, {
             models
-        }) => Object.values(models.bugs),
-        bug: (parent, {
+        }) => await models.Bug.findAll(),
+        bug: async (parent, {
             id
         }, {
             models
-        }) => models.bugs[id],
+        }) => await models.Bug.findByPk(id),
 
     },
     Mutation: {
 
-        createBug: (parent, {
+        createBug: async (parent, {
             title,
             description
         }, {
             me,
             models
         }) => {
-            const id = Math.floor(Math.random() * 1001);
-
-            const bug = {
-                id,
-                userId: me.id,
+            return await models.Bug.create({
                 title,
-                description
-            };
-
-            models.bugs[id] = bug;
-            models.users[me.id].bugIds.push(id);
-
-            return bug;
+                description,
+                userId: me.id,
+            })
         },
 
-        deleteBug: (parent, {
+        deleteBug: async (parent, {
             id
         }, {
             models
         }) => {
-            const {
-                [id]: bug, ...otherBugs
-            } = models.bugs;
-
-            if (!bug) {
-                return false;
-            }
-
-            models.bugs = otherBugs;
-            return true;
+            return await models.Bug.destroy({
+                where: {
+                    id
+                }
+            });
         },
     },
 
     Bug: {
-        user: (bug, args, {
+        user: async (bug, args, {
             models
         }) => {
-            return models.users[bug.userId];
+            return await models.Bug.findByPk(bug.userId);
         }
     },
 };

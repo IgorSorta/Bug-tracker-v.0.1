@@ -1,33 +1,42 @@
 module.exports = {
     Query: {
-        me: (parent, args, {
-            me
+        me: async (parent, args, {
+            me,
+            models
         }) => {
-            return me;
+            return await models.User.findByPk(me.id);
         },
-        user: (parent, {
+        user: async (parent, {
             id
         }, {
             models
         }) => {
-            return models.users[id];
+            return await models.User.findByPk(id);
         },
-        users: (parent, args, {
+        users: async (parent, args, {
             models
         }) => {
-            return Object.values(models.users);
+            return await models.User.findAll();
         }
     },
     User: {
-        messages: (user, args, {
+        messages: async (user, args, {
             models
         }) => {
-            return Object.values(models.main).filter(message => message.userId === user.id);
+            return await models.Message.findAll({
+                where: {
+                    userId: user.id,
+                },
+            });
         },
-        bugs: (user, args, {
+        bugs: async (user, args, {
             models
         }) => {
-            return Object.values(models.bugs).filter(bug => bug.userId === user.id);
+            return await models.Bug.findAll({
+                where: {
+                    userId: user.id
+                },
+            });
         }
-    }
-}
+    },
+};
