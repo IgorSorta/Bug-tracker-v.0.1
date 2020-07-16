@@ -1,49 +1,30 @@
-const main = {
-    1: {
-        id: '1',
-        userId: '1',
-        text: 'Main: mess 1',
+require('dotenv').config();
+const Sequelize = require('sequelize');
+const user = require('./user');
+const message = require('./message');
+const bug = require('./bug');
+
+const sequelize = new Sequelize(
+    process.env.DATABASE,
+    process.env.DATABASE_USER,
+    process.env.DATABASE_PASSWORD, {
+        dialect: 'mysql'
     },
-    2: {
-        id: '2',
-        userId: '2',
-        text: 'Main: kess 2',
-    }
+);
+
+const models = {
+    User: user,
+    Message: message,
+    Bug: bug,
 };
 
-const bugs = {
-    1: {
-        id: '1',
-        userId: '1',
-        title: 'system error',
-        description: 'lorenfksdl ksflksdl sdlksdlksdf kl s lksdflsdfsfsf'
-    },
-    2: {
-        id: '2',
-        userId: '2',
-        title: 'DOM bug',
-        description: 'slsfkl fjldios lposfifjslkfsf[sfpo3399dfkd   lkfosfjk 099sfjij 0ijksf'
+Object.keys(models).forEach(key => {
+    if ('associate' in models[key]) {
+        models[key].associate(models);
     }
-};
-
-let users = {
-    1: {
-        id: '1',
-        name: 'John',
-        messageIds: [1],
-        bugIds: [1],
-
-    },
-    2: {
-        id: '2',
-        name: 'Roma',
-        messageIds: [2],
-        bugIds: [2],
-    },
-}
+});
 
 module.exports = {
-    main,
-    bugs,
-    users
+    sequelize,
+    models
 };
