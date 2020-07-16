@@ -18,10 +18,10 @@ const app = express();
 const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    context: {
+    context: async () => ({
         models,
-        //me: users[1]
-    },
+        me: models.User.findByLogin('John'),
+    }),
 
 });
 
