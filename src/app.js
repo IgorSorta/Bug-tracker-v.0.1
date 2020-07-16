@@ -25,12 +25,21 @@ const server = new ApolloServer({
 
 });
 
+
 server.applyMiddleware({
     app,
     path: '/bug'
 });
 
-sequelize.sync().then(async () => {
+const eraseDatabaseOnSync = true;
+
+sequelize.sync({
+    force: eraseDatabaseOnSync
+}).then(async () => {
+
+    if (eraseDatabaseOnSync) {
+        createUserWithMessages();
+    }
 
     app.listen({
         port: 4000
@@ -38,3 +47,31 @@ sequelize.sync().then(async () => {
         console.log('Apollo Server on http://localhost:4000/bug');
     });
 });
+
+const createUserWithMessages = async () => {
+    await models.User.create({
+        name: 'John',
+        messages: [{
+            text: 'Test message from John'
+        }, ],
+        bugs: [{
+            title: 'Bug no.1',
+            text: 'Bug no.1 in register form...'
+        }],
+    }, {
+        include: [models.Message, models.Bug],
+    }, );
+
+    await models.User.create({
+        name: 'Mark',
+        messages: [{
+            text: 'Test message from Mark'
+        }, ],
+        bugs: [{
+            title: 'Bug no.20',
+            text: 'Bug no.20 in login form...'
+        }],
+    }, {
+        include: [models.Message, models.Bug],
+    }, )
+};
