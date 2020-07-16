@@ -5,11 +5,12 @@ const {
     ApolloServer
 } = require('apollo-server-express');
 
-const models = require('./models/index');
+
 const schema = require('./schema/index');
 const resolvers = require('./resolvers/index');
 const {
-    users
+    models,
+    sequelize,
 } = require('./models/index');
 
 
@@ -19,7 +20,7 @@ const server = new ApolloServer({
     resolvers,
     context: {
         models,
-        me: users[1]
+        //me: users[1]
     },
 
 });
@@ -29,8 +30,11 @@ server.applyMiddleware({
     path: '/bug'
 });
 
-app.listen({
-    port: 4000
-}, () => {
-    console.log('Apollo Server on http://localhost:4000/bug');
+sequelize.sync().then(async () => {
+
+    app.listen({
+        port: 4000
+    }, () => {
+        console.log('Apollo Server on http://localhost:4000/bug');
+    });
 });
