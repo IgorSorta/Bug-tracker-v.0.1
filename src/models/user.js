@@ -31,7 +31,8 @@ User.init({
             notEmpty: {
                 args: true,
                 msg: 'A user has have a email.'
-            }
+            },
+            isEmail: true
         }
     },
     password: {
@@ -42,7 +43,8 @@ User.init({
             notEmpty: {
                 args: true,
                 msg: 'A user has have a password.'
-            }
+            },
+            len: [6, 36],
         }
     },
 }, {
