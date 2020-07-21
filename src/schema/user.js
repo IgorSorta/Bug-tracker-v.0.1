@@ -12,6 +12,7 @@ extend type Query {
 type User {
   id: ID!
   name: String!
+  email: String!
   messages: [Message!]
   bugs: [Bug!]
 }
