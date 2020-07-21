@@ -16,10 +16,16 @@ Bug.init({
     title: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
     description: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
     userId: {
         type: DataTypes.INTEGER,
