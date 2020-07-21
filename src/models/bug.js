@@ -1,15 +1,32 @@
-const bug = (sequelize, DataTypes) => {
-    const Bug = sequelize.define('bug', {
-        text: {
-            type: DataTypes.STRING,
-        },
-    });
+const {
+    DataTypes,
+    Model
+} = require('sequelize');
 
-    Bug.associate = models => {
-        Bug.belongsTo(models.User);
-    };
+const sequelize = require('./sequelize');
 
-    return Bug;
-};
+class Bug extends Model {}
+Bug.init({
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+    }
+}, {
+    sequelize: sequelize,
+    modelName: 'bug'
+});
 
-module.exports = bug;
+module.exports = Bug;

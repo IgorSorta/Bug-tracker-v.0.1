@@ -1,24 +1,54 @@
-const user = (sequelize, DataTypes) => {
-    const User = sequelize.define('user', {
-        name: {
-            type: DataTypes.STRING,
-        },
-    });
+const {
+    DataTypes,
+    Model,
+} = require('sequelize');
 
-    User.associate = models => {
-        User.hasMany(models.Message, {
-            onDelete: 'CASCADE'
-        });
-        User.hasMany(models.Bug, {
-            onDelete: 'CASCADE'
-        });
-    };
+const sequelize = require('./sequelize');
+const Message = require('./message');
+const Bug = require('./bug');
 
-    User.findByLogin = async (login) => {
+class User extends Model {}
+User.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+    },
+    name: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+            notEmpty: true,
+        }
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
+}, {
+    sequelize: sequelize,
+    createdAt: false,
+    updatedAt: false,
+    modelName: 'user'
+});
+
+User.findByLogin = async (login) => {
+    try {
         let user = await User.findOne({
             where: {
                 name: login
             },
+            include: [Message, Bug]
         });
 
         if (!user) {
@@ -29,9 +59,10 @@ const user = (sequelize, DataTypes) => {
             });
         }
         return user;
-    };
+    } catch (error) {
+        console.log('Error: findByLogin ', error);
+    }
 
-    return User;
-}
+};
 
-module.exports = user;
+module.exports = User;

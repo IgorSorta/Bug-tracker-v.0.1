@@ -1,30 +1,22 @@
-require('dotenv').config();
-const Sequelize = require('sequelize');
-const user = require('./user');
-const message = require('./message');
-const bug = require('./bug');
+const sequelize = require('./sequelize');
 
-const sequelize = new Sequelize(
-    process.env.DATABASE,
-    process.env.DATABASE_USER,
-    process.env.DATABASE_PASSWORD, {
-        dialect: 'mysql'
-    },
-);
+const User = require('./user');
+const Message = require('./message');
+const Bug = require('./bug');
+
+User.hasMany(Message);
+User.hasMany(Bug);
+
+Message.belongsTo(User);
+Bug.belongsTo(User);
 
 const models = {
-    User: user,
-    Message: message,
-    Bug: bug,
+    User,
+    Message,
+    Bug,
 };
-
-Object.keys(models).forEach(key => {
-    if ('associate' in models[key]) {
-        models[key].associate(models);
-    }
-});
 
 module.exports = {
     sequelize,
-    models
+    models,
 };
