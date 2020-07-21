@@ -5,41 +5,39 @@ const {
     ApolloServer
 } = require('apollo-server-express');
 
-
 const schema = require('./schema/index');
 const resolvers = require('./resolvers/index');
 const {
     models,
-    sequelize,
+    sequelize
 } = require('./models/index');
-
+const {
+    includes
+} = require('./resolvers/index');
 
 const app = express();
 const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
     context: async () => ({
-        models,
-        me: models.User.findByLogin('John'),
+        models: models,
+        me: await models.User.findByLogin('janedoe'),
     }),
 
 });
-
 
 server.applyMiddleware({
     app,
     path: '/bug'
 });
 
-const eraseDatabaseOnSync = true;
+let eraseDatabaseOnSync = true;
 
 sequelize.sync({
     force: eraseDatabaseOnSync
 }).then(async () => {
 
-    if (eraseDatabaseOnSync) {
-        createUserWithMessages();
-    }
+    createFakeData(models);
 
     app.listen({
         port: 4000
@@ -48,30 +46,25 @@ sequelize.sync({
     });
 });
 
-const createUserWithMessages = async () => {
-    await models.User.create({
-        name: 'John',
-        messages: [{
-            text: 'Test message from John'
-        }, ],
-        bugs: [{
-            title: 'Bug no.1',
-            text: 'Bug no.1 in register form...'
-        }],
+//
+async function createFakeData(models) {
+    const user = await models.User.create({
+        id: 1,
+        name: 'janedoe',
+        email: 'jan@mail.com',
+        password: 'janedoe'
     }, {
-        include: [models.Message, models.Bug],
-    }, );
+        includes: [models.Message, models.Bug]
+    }).then((user) => {
+        models.Message.create({
+            text: 'after erase message',
+            userId: user.id,
+        });
 
-    await models.User.create({
-        name: 'Mark',
-        messages: [{
-            text: 'Test message from Mark'
-        }, ],
-        bugs: [{
-            title: 'Bug no.20',
-            text: 'Bug no.20 in login form...'
-        }],
-    }, {
-        include: [models.Message, models.Bug],
-    }, )
-};
+        models.Bug.create({
+            title: 'Fake title erase',
+            description: 'Fake bug description after erase',
+            userId: user.id,
+        })
+    });
+}
