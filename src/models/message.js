@@ -16,7 +16,10 @@ Message.init({
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            notEmpty: true,
+            notEmpty: {
+                args: true,
+                msg: 'A message has to have a text.'
+            }
         }
     },
     userId: {

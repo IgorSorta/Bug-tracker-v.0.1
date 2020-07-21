@@ -18,14 +18,20 @@ User.init({
         unique: true,
         allowNull: false,
         validate: {
-            notEmpty: true,
+            notEmpty: {
+                args: true,
+                msg: 'A user has have a name.'
+            },
         }
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            notEmpty: true
+            notEmpty: {
+                args: true,
+                msg: 'A user has have a email.'
+            }
         }
     },
     password: {
@@ -33,7 +39,10 @@ User.init({
         allowNull: false,
         unique: true,
         validate: {
-            notEmpty: true
+            notEmpty: {
+                args: true,
+                msg: 'A user has have a password.'
+            }
         }
     },
 }, {

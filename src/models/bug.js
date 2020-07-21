@@ -17,14 +17,20 @@ Bug.init({
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            notEmpty: true
+            notEmpty: {
+                args: true,
+                msg: 'A bug has have a title.'
+            }
         }
     },
     description: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            notEmpty: true
+            notEmpty: {
+                args: true,
+                msg: 'A bug has have a text.'
+            }
         }
     },
     userId: {
