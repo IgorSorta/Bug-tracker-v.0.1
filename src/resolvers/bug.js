@@ -1,20 +1,25 @@
-const message = require("./message");
+const {
+    includes
+} = require(".");
 
 module.exports = {
     Query: {
 
         bugs: async (parent, args, {
             models
-        }) => await models.Bug.findAll(),
+        }) => {
+            return await models.Bug.findAll()
+        },
         bug: async (parent, {
             id
         }, {
             models
-        }) => await models.Bug.findByPk(id),
+        }) => {
+            return await models.Bug.findByPk(id)
+        },
 
     },
     Mutation: {
-
         createBug: async (parent, {
             title,
             description
@@ -22,11 +27,16 @@ module.exports = {
             me,
             models
         }) => {
-            return await models.Bug.create({
-                title,
-                description,
-                userId: me.id,
-            })
+            try {
+                const newBug = await models.Bug.create({
+                    title,
+                    description,
+                    userId: me.id,
+                }, );
+                return newBug;
+            } catch (error) {
+                throw new Error(error);
+            }
         },
 
         deleteBug: async (parent, {
@@ -46,7 +56,7 @@ module.exports = {
         user: async (bug, args, {
             models
         }) => {
-            return await models.Bug.findByPk(bug.userId);
+            return await models.User.findByPk(bug.userId);
         }
     },
 };

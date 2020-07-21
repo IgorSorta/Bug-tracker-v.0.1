@@ -9,7 +9,9 @@ module.exports = {
             id
         }, {
             models
-        }) => await models.Message.findByPk(id),
+        }) => {
+            return await models.Message.findByPk(id)
+        },
     },
     Mutation: {
         createMessage: async (parent, {
@@ -18,10 +20,15 @@ module.exports = {
             me,
             models
         }) => {
-            return await models.Message.create({
-                text,
-                userId: me.id,
-            });
+            try {
+                const newMess = await models.Message.create({
+                    text: text,
+                    userId: me.id,
+                });
+                return newMess;
+            } catch (error) {
+                throw new Error(error);
+            }
         },
         deleteMessage: async (parent, {
             id
@@ -30,7 +37,7 @@ module.exports = {
         }) => {
             return await models.Message.destroy({
                 where: {
-                    id
+                    id: id
                 }
             });
         },

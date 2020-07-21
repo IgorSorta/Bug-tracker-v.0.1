@@ -4,6 +4,10 @@ module.exports = {
             me,
             models
         }) => {
+            if (!me) {
+                return null;
+            }
+
             return await models.User.findByPk(me.id);
         },
         user: async (parent, {
@@ -27,6 +31,7 @@ module.exports = {
                 where: {
                     userId: user.id,
                 },
+
             });
         },
         bugs: async (user, args, {
