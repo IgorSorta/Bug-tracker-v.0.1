@@ -35,6 +35,7 @@ module.exports = {
             secret
         }) => {
             const user = models.User.create({
+                id: 22,
                 name: name,
                 email: email,
                 password: password
