@@ -14,6 +14,10 @@ class User extends Model {
         const salt = 10;
         return await bcrypt.hash(this.password, salt);
     }
+
+    async validatePassword(password) {
+        return await bcrypt.compare(password, this.password);
+    }
 }
 User.init({
     id: {
