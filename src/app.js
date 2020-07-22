@@ -34,6 +34,7 @@ const server = new ApolloServer({
     context: async () => ({
         models: models,
         me: await models.User.findByLogin('janedoe'),
+        secret: process.env.SECRET,
     }),
 
 });
