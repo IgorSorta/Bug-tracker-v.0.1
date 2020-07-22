@@ -1,9 +1,11 @@
 const {
     DataTypes,
     Model,
+    UUIDV1,
 } = require('sequelize');
 
 const sequelize = require('./sequelize');
+const bcrypt = require('bcrypt');
 const Message = require('./message');
 const Bug = require('./bug');
 
@@ -48,11 +50,21 @@ User.init({
         }
     },
 }, {
+    hooks: {
+        beforeCreate: async (user) => {
+            user.password = await user.generatePasswordHash();
+        }
+    },
     sequelize: sequelize,
     createdAt: false,
     updatedAt: false,
     modelName: 'user'
 });
+
+User.prototype.generatePasswordHash = async () => {
+    const salt = 10;
+    return await bcrypt.hash(this.password, salt);
+};
 
 User.findByLogin = async (login) => {
     try {
