@@ -9,7 +9,12 @@ const bcrypt = require('bcrypt');
 const Message = require('./message');
 const Bug = require('./bug');
 
-class User extends Model {}
+class User extends Model {
+    async generatePasswordHash() {
+        const salt = 10;
+        return await bcrypt.hash(this.password, salt);
+    }
+}
 User.init({
     id: {
         type: DataTypes.INTEGER,
@@ -60,11 +65,6 @@ User.init({
     updatedAt: false,
     modelName: 'user'
 });
-
-User.prototype.generatePasswordHash = async () => {
-    const salt = 10;
-    return await bcrypt.hash(this.password, salt);
-};
 
 User.findByLogin = async (login) => {
     try {
