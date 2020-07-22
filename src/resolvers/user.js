@@ -1,3 +1,5 @@
+const createToken = require('../helpers/createToken');
+
 module.exports = {
     Query: {
         me: async (parent, args, {
@@ -21,6 +23,25 @@ module.exports = {
             models
         }) => {
             return await models.User.findAll();
+        }
+    },
+    Mutation: {
+        signUp: async (parent, {
+            name,
+            email,
+            password
+        }, {
+            models,
+            secret
+        }) => {
+            const user = models.User.create({
+                name: name,
+                email: email,
+                password: password
+            });
+            return {
+                token: createToken(user, secret, '30m')
+            };
         }
     },
     User: {
