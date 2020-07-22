@@ -1,5 +1,13 @@
 const createToken = require('../helpers/createToken');
 
+const {
+    AuthenticationError,
+    UserInputError
+} = require('apollo-server');
+const {
+    ne
+} = require('sequelize/types/lib/operators');
+
 module.exports = {
     Query: {
         me: async (parent, args, {
@@ -43,6 +51,29 @@ module.exports = {
             return {
                 token: createToken(user, secret, '30m')
             };
+        },
+        signIn: async (parent, {
+            login,
+            password
+        }, {
+            models,
+            secret
+        }) => {
+            const user = await models.User.findByLogin(login);
+
+            if (!user) {
+                throw new UserInputError('No user found with this login.');
+            }
+
+            const isValid = await user.validatePassword(password);
+
+            if (!isValid) {
+                throw new AuthenticationError('Invalid password.');
+            }
+
+            return {
+                token: createToken(user, secret, '30m')
+            }
         }
     },
     User: {
