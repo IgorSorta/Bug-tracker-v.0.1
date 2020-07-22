@@ -4,9 +4,6 @@ const {
     AuthenticationError,
     UserInputError
 } = require('apollo-server');
-const {
-    ne
-} = require('sequelize/types/lib/operators');
 
 module.exports = {
     Query: {
@@ -43,7 +40,7 @@ module.exports = {
             secret
         }) => {
             const user = models.User.create({
-                id: 22,
+                id: 22, //TODO implement UUID 
                 name: name,
                 email: email,
                 password: password
