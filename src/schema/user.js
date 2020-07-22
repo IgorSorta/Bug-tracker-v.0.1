@@ -10,7 +10,6 @@ extend type Query {
 }
 
 extend type Mutation {
-  createUser(name: String! email: String! password: String!): User!
   signUp(name: String! email: String! password: String!): Token!
 }
 
