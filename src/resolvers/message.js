@@ -1,6 +1,10 @@
 const {
     ForbiddenError
 } = require('apollo-server');
+const {
+    combineResolvers
+} = require('graphql-resolvers');
+const isAuthenticated = require('./authorization');
 
 module.exports = {
     Query: {
@@ -18,26 +22,25 @@ module.exports = {
         },
     },
     Mutation: {
-        createMessage: async (parent, {
-            text
-        }, {
-            me,
-            models
-        }) => {
-            try {
-                if (!me) {
-                    throw new ForbiddenError('You are not authenticated to create a message.');
+        createMessage: combineResolvers(
+            isAuthenticated,
+            async (parent, {
+                text
+            }, {
+                me,
+                models
+            }) => {
+                try {
+                    const newMess = await models.Message.create({
+                        text: text,
+                        userId: me.id,
+                    });
+                    return newMess;
+                } catch (error) {
+                    throw new Error(error);
                 }
-
-                const newMess = await models.Message.create({
-                    text: text,
-                    userId: me.id,
-                });
-                return newMess;
-            } catch (error) {
-                throw new Error(error);
             }
-        },
+        ),
         deleteMessage: async (parent, {
             id
         }, {
