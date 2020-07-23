@@ -4,7 +4,10 @@ const {
 const {
     combineResolvers
 } = require('graphql-resolvers');
-const isAuthenticated = require('./authorization');
+const {
+    isAuthenticated,
+    isMessageOwner
+} = require('./authorization');
 
 module.exports = {
     Query: {
@@ -41,17 +44,20 @@ module.exports = {
                 }
             }
         ),
-        deleteMessage: async (parent, {
-            id
-        }, {
-            models
-        }) => {
-            return await models.Message.destroy({
-                where: {
-                    id: id
-                }
-            });
-        },
+        deleteMessage: combineResolvers(
+            isMessageOwner,
+            async (parent, {
+                id
+            }, {
+                models
+            }) => {
+                return await models.Message.destroy({
+                    where: {
+                        id: id
+                    }
+                });
+            }
+        ),
     },
     Message: {
         user: async (message, args, {
