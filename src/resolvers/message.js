@@ -1,3 +1,7 @@
+const {
+    ForbiddenError
+} = require('apollo-server');
+
 module.exports = {
     Query: {
         messages: async (parent, args, {
@@ -21,6 +25,10 @@ module.exports = {
             models
         }) => {
             try {
+                if (!me) {
+                    throw new ForbiddenError('You are not authenticated to create a message.');
+                }
+
                 const newMess = await models.Message.create({
                     text: text,
                     userId: me.id,
