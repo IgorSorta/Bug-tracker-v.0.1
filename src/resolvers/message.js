@@ -45,6 +45,7 @@ module.exports = {
             }
         ),
         deleteMessage: combineResolvers(
+            isAuthenticated,
             isMessageOwner,
             async (parent, {
                 id
