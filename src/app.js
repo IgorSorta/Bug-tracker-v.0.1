@@ -11,9 +11,7 @@ const {
     models,
     sequelize
 } = require('./models/index');
-const {
-    includes
-} = require('./resolvers/index');
+const getMe = require('./helpers/getMe');
 
 const app = express();
 const server = new ApolloServer({
@@ -31,11 +29,17 @@ const server = new ApolloServer({
             message,
         };
     },
-    context: async () => ({
-        models: models,
-        me: await models.User.findByLogin('janedoe'),
-        secret: process.env.SECRET,
-    }),
+    context: async ({
+        req
+    }) => {
+        const me = await getMe(req);
+
+        return {
+            models: models,
+            me: me,
+            secret: process.env.SECRET,
+        };
+    },
 
 });
 
