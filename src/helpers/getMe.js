@@ -4,7 +4,7 @@ const {
 } = require('apollo-server-express');
 
 module.exports = async (req) => {
-    const token = req.headers['x-token'];
+    const token = req.headers["authorization"] || ''
 
     if (token) {
         try {
