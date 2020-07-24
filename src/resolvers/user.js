@@ -47,7 +47,6 @@ module.exports = {
             secret
         }) => {
             const user = models.User.create({
-                id: 22, //TODO implement UUID 
                 name: name,
                 email: email,
                 password: password
