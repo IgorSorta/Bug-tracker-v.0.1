@@ -69,6 +69,7 @@ async function createFakeData(models) {
         id: 1,
         name: 'janedoe',
         email: 'jan@mail.com',
+        role: 'ADMIN',
         password: 'janedoe'
     }, {
         includes: [models.Message, models.Bug]

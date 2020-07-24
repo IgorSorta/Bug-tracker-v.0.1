@@ -4,13 +4,15 @@ module.exports = async (user, secret, expiresIn) => {
     const {
         id,
         email,
-        name
+        name,
+        role,
     } = user;
 
     return await JWT.sign({
         id,
         email,
-        name
+        name,
+        role
     }, secret, {
         expiresIn
     });
