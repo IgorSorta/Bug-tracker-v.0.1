@@ -12,12 +12,14 @@ extend type Query {
 extend type Mutation {
   signUp(name: String! email: String! password: String!): Token!
   signIn(login: String!, password: String!): Token!
+  deleteUser(id: ID!): Boolean!
 }
 
 type User {
   id: ID!
   name: String!
   email: String!
+  role: String!
   messages: [Message!]
   bugs: [Bug!]
 }
