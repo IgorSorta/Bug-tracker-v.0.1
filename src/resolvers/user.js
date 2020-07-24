@@ -4,6 +4,13 @@ const {
     AuthenticationError,
     UserInputError
 } = require('apollo-server');
+const {
+    combineResolvers
+} = require('graphql-resolvers');
+const {
+    isAuthenticated,
+    isAdmin
+} = require('./authorization');
 
 module.exports = {
     Query: {
@@ -72,17 +79,21 @@ module.exports = {
                 token: createToken(user, secret, '30m')
             }
         },
-        deleteUser: async (parent, {
-            id
-        }, {
-            models
-        }) => {
-            return await models.User.destroy({
-                where: {
-                    id
-                },
-            });
-        },
+        deleteUser: combineResolvers(
+            isAuthenticated,
+            isAdmin,
+            async (parent, {
+                id
+            }, {
+                models
+            }) => {
+                return await models.User.destroy({
+                    where: {
+                        id: id
+                    },
+                });
+            }
+        ),
     },
     User: {
         messages: async (user, args, {
