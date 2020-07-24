@@ -5,10 +5,16 @@ const {
     skip
 } = require('graphql-resolvers');
 
+
 module.exports = {
     isAuthenticated: (parent, args, {
         me
     }) => me ? skip : new ForbiddenError('You are not authenticated. Please login.'),
+    isAdmin: (parent, args, {
+        me: {
+            role
+        }
+    }) => role === 'ADMIN' ? skip : ForbiddenError('You are not authorized as Admin.'),
     isMessageOwner: async (parent, {
         id
     }, {
