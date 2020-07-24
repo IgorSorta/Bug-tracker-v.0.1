@@ -58,6 +58,9 @@ User.init({
             len: [6, 36],
         }
     },
+    role: {
+        type: DataTypes.STRING
+    }
 }, {
     hooks: {
         beforeCreate: async (user) => {
