@@ -19,7 +19,21 @@ module.exports = {
             raw: true
         });
 
-        if (message.userId !== me.id) throw new ForbiddenError('You are not authenticated as owner.');
+        if (message.userId !== me.id) throw new ForbiddenError('You are not authenticated as message owner.');
+
+        return skip;
+    },
+    isBugOwner: async (parent, {
+        id
+    }, {
+        models,
+        me
+    }) => {
+        const bug = await models.Bug.findByPk(id, {
+            raw: true
+        });
+
+        if (bug.userId !== me.id) throw new ForbiddenError('You are not authenticated as bug owner.')
 
         return skip;
     },
