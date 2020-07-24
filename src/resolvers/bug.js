@@ -1,3 +1,11 @@
+const {
+    combineResolvers
+} = require('graphql-resolvers');
+const {
+    isAuthenticated,
+    isMessageOwner
+} = require('./authorization');
+
 module.exports = {
     Query: {
 
@@ -16,36 +24,43 @@ module.exports = {
 
     },
     Mutation: {
-        createBug: async (parent, {
-            title,
-            description
-        }, {
-            me,
-            models
-        }) => {
-            try {
-                const newBug = await models.Bug.create({
-                    title,
-                    description,
-                    userId: me.id,
-                }, );
-                return newBug;
-            } catch (error) {
-                throw new Error(error);
-            }
-        },
-
-        deleteBug: async (parent, {
-            id
-        }, {
-            models
-        }) => {
-            return await models.Bug.destroy({
-                where: {
-                    id
+        createBug: combineResolvers(
+            isAuthenticated,
+            async (parent, {
+                title,
+                description
+            }, {
+                me,
+                models
+            }) => {
+                try {
+                    const newBug = await models.Bug.create({
+                        title,
+                        description,
+                        userId: me.id,
+                    }, );
+                    return newBug;
+                } catch (error) {
+                    throw new Error(error);
                 }
-            });
-        },
+            }
+        ),
+
+        deleteBug: combineResolvers(
+            isAuthenticated,
+            isMessageOwner,
+            async (parent, {
+                id
+            }, {
+                models
+            }) => {
+                return await models.Bug.destroy({
+                    where: {
+                        id
+                    }
+                });
+            },
+        )
     },
 
     Bug: {
