@@ -1,13 +1,13 @@
 const {
     DataTypes,
     Model,
-    UUIDV1,
 } = require('sequelize');
 
 const sequelize = require('./sequelize');
 const bcrypt = require('bcrypt');
 const Message = require('./message');
 const Bug = require('./bug');
+const createUUID = require('../helpers/createUUID');
 
 class User extends Model {
     async generatePasswordHash() {
@@ -21,8 +21,10 @@ class User extends Model {
 }
 User.init({
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: () => createUUID(),
         primaryKey: true,
+        allowNull: false,
     },
     name: {
         type: DataTypes.STRING,
@@ -68,8 +70,6 @@ User.init({
         }
     },
     sequelize: sequelize,
-    createdAt: false,
-    updatedAt: false,
     modelName: 'user'
 });
 

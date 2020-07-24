@@ -4,12 +4,13 @@ const {
 } = require('sequelize');
 
 const sequelize = require('./sequelize');
+const createUUID = require('../helpers/createUUID');
 
 class Bug extends Model {}
 Bug.init({
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: () => createUUID(),
         primaryKey: true,
         allowNull: false,
     },
@@ -34,7 +35,8 @@ Bug.init({
         }
     },
     userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        allowNull: false,
     }
 }, {
     sequelize: sequelize,

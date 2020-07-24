@@ -3,12 +3,13 @@ const {
     Model,
 } = require('sequelize');
 const sequelize = require('./sequelize');
+const createUUID = require('../helpers/createUUID');
 
 class Message extends Model {}
 Message.init({
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: () => createUUID(),
         primaryKey: true,
         allowNull: false,
     },
@@ -23,7 +24,8 @@ Message.init({
         }
     },
     userId: {
-        type: DataTypes.INTEGER
+        type: DataTypes.UUID,
+        allowNull: false,
     }
 }, {
     sequelize: sequelize,
