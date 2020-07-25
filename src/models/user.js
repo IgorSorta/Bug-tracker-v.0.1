@@ -61,7 +61,9 @@ User.init({
         }
     },
     role: {
-        type: DataTypes.STRING
+        type: DataTypes.ENUM('USER', 'ADMIN'),
+        defaultValue: 'USER',
+        allowNull: false,
     }
 }, {
     hooks: {

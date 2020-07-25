@@ -13,6 +13,7 @@ extend type Mutation {
   signUp(name: String! email: String! password: String!): Token!
   signIn(login: String!, password: String!): Token!
   deleteUser(id: ID!): Boolean!
+  changeRole(id: ID! name: String! role: String!): String!
 }
 
 type User {
