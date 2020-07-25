@@ -93,6 +93,28 @@ module.exports = {
                 });
             }
         ),
+        changeRole: combineResolvers(
+            isAuthenticated,
+            isAdmin,
+            async (parent, {
+                id,
+                name,
+                role
+            }, {
+                models
+            }) => {
+                await models.User.update({
+                    role: role
+                }, {
+                    where: {
+                        id: id,
+                        name: name
+                    }
+                })
+                return 'Done'
+
+            },
+        ),
     },
     User: {
         messages: async (user, args, {
