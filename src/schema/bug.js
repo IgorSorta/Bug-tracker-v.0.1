@@ -18,6 +18,7 @@ type Bug {
   user: User!
   title: String!
   description: String!
+  createdAt: Date!
 }
 `;
 

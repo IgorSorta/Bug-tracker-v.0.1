@@ -1,7 +1,7 @@
 const {
     gql
 } = require('apollo-server-express');
-
+// TODO pagination
 const message = gql `
   extend type Query {
     messages: [Message!]!
@@ -16,6 +16,7 @@ const message = gql `
   type Message {
     id: ID!
     text: String!
+    createdAt: Date!
     user: User!
   }
 `;

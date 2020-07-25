@@ -22,6 +22,7 @@ type User {
   role: String!
   messages: [Message!]
   bugs: [Bug!]
+  createdAt: Date!
 }
 
 type Token {
