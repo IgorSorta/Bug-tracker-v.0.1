@@ -3,7 +3,7 @@ const {
 } = require('graphql-resolvers');
 const {
     isAuthenticated,
-    isMessageOwner
+    isBugOwner
 } = require('./authorization');
 
 module.exports = {
@@ -45,10 +45,45 @@ module.exports = {
                 }
             }
         ),
-
+        changeStatus: combineResolvers(
+            isAuthenticated,
+            async (parent, {
+                id,
+                status
+            }, {
+                models
+            }) => {
+                await models.Bug.update({
+                    status: status
+                }, {
+                    where: {
+                        id: id
+                    }
+                });
+                return 'Status changed.'
+            }
+        ),
+        setPriority: combineResolvers(
+            isAuthenticated,
+            async (parent, {
+                id,
+                priority
+            }, {
+                models
+            }) => {
+                await models.Bug.update({
+                    priority: priority
+                }, {
+                    where: {
+                        id: id
+                    }
+                });
+                return 'DONE'
+            }
+        ),
         deleteBug: combineResolvers(
             isAuthenticated,
-            isMessageOwner,
+            isBugOwner,
             async (parent, {
                 id
             }, {
