@@ -13,7 +13,7 @@ extend type Mutation {
   signUp(name: String! email: String! password: String!): Token!
   signIn(login: String!, password: String!): Token!
   deleteUser(id: ID!): Boolean!
-  changeRole(id: ID! name: String! role: String!): String!
+  changeRole(id: ID! name: String! role: userRole!): String!
 }
 
 type User {
@@ -28,6 +28,11 @@ type User {
 
 type Token {
   token: String!
+}
+
+enum userRole {
+  USER
+  ADMIN
 }
 `;
 
