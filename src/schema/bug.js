@@ -11,6 +11,8 @@ extend type Query {
 extend type Mutation {
   createBug(title: String! description: String!): Bug!
   deleteBug(id: ID!): Boolean!
+  changeStatus(id: ID! status: bugStatus!): String!
+  setPriority(id: ID! priority:bugPriority!): String!
 }
 
 type Bug {
@@ -18,7 +20,26 @@ type Bug {
   user: User!
   title: String!
   description: String!
+  status: String!
+  priority: String!
   createdAt: Date!
+}
+
+enum bugStatus {
+  NEW
+  CONFIRMED
+  DEVELOPED
+  IN TESTING
+  TESTED
+  CLOSED
+  REJECTED
+}
+
+enum bugPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 `;
 

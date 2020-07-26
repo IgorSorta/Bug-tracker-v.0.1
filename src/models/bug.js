@@ -14,6 +14,18 @@ Bug.init({
         primaryKey: true,
         allowNull: false,
     },
+    status: {
+        type: DataTypes.ENUM,
+        values: ['NEW', 'CONFIRMED', 'IN PROGRESS', 'DEVELOPED', 'IN TESTING', 'TESTED', 'CLOSED', 'REJECTED'],
+        defaultValue: 'NEW',
+        allowNull: false,
+    },
+    priority: {
+        type: DataTypes.ENUM,
+        values: ['UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
+        defaultValue: 'UNKNOWN',
+        allowNull: false,
+    },
     title: {
         type: DataTypes.STRING,
         allowNull: false,
