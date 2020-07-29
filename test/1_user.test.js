@@ -1,26 +1,26 @@
-//const EasyGraphQLTester = require("easygraphql-tester");
-const axios = require('axios');
 const {
     models
 } = require('../src/models/index');
+const createToken = require('../src/helpers/createToken');
+const {
+    getQuery
+} = require('./helpers/test_Helpers');
 
-const API_URL = 'http://localhost:4000/bug';
-const getQuery = async (query) => axios.post(API_URL,
-    query
-);
-
-describe('Testing User: query', () => {
-    var usxxx;
+describe('Testing User: query (users, user(id), me)', () => {
+    var TEST_USER;
+    var token;
     beforeAll(async () => {
-        usxxx = await models.User.findOne({
+        TEST_USER = await models.User.findOne({
             where: {
                 name: 'testUser'
             }
         });
+
+        token = await createToken(TEST_USER, process.env.SECRET, '30m')
     }, 10000);
 
-    test('Should pass if the query is valid: users', async () => {
-        const result = await getQuery({
+    test('users: should pass if the query is valid', async () => {
+        const test_query = await getQuery({
             query: `query {
             users {
               name
@@ -38,14 +38,14 @@ describe('Testing User: query', () => {
             },
         };
 
-        expect(result.data).toMatchObject(expectedResult);
+        expect(test_query.data).toMatchObject(expectedResult);
     });
 
-    test('Should pass if the query is valid: user(id)', async () => {
+    test('user(id): should pass if the query is valid', async () => {
 
-        const result = await getQuery({
+        const test_query = await getQuery({
             query: `query {
-            user(id: "${usxxx.id}") {
+            user(id: "${TEST_USER.id}") {
               name
             }
           }
@@ -55,12 +55,33 @@ describe('Testing User: query', () => {
         const expectedResult = {
             data: {
                 user: {
-                    name: usxxx.name,
+                    name: TEST_USER.name,
 
                 },
             },
         };
 
-        expect(result.data).toMatchObject(expectedResult);
+        expect(test_query.data).toMatchObject(expectedResult);
     });
+
+    test('me: should pass if the query is valid', async () => {
+        const test_query = await getQuery({
+            query: `query {
+                me {
+                    id
+                    name
+                  }
+            }`
+        }, token);
+
+        const expectedResult = {
+            "data": {
+                "me": {
+                    "name": TEST_USER.name
+                }
+            }
+        };
+
+        expect(test_query.data).toMatchObject(expectedResult)
+    })
 });
