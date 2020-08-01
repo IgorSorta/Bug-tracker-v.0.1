@@ -34,7 +34,11 @@ module.exports = {
         users: async (parent, args, {
             models
         }) => {
-            return await models.User.findAll();
+            return await models.User.findAll({
+                order: [
+                    ["createdAt", "ASC"]
+                ]
+            });
         }
     },
     Mutation: {
@@ -46,37 +50,54 @@ module.exports = {
             models,
             secret
         }) => {
-            const user = models.User.create({
-                name: name,
-                email: email,
-                password: password
-            });
-            return {
-                token: createToken(user, secret, '30m')
-            };
+            try {
+                if (!name) throw new UserInputError('User must provide name');
+                if (!email) throw new UserInputError('User must provide email');
+                if (!password) throw new UserInputError('User must provide password');
+
+                const user = models.User.create({
+                    name: name,
+                    email: email,
+                    password: password
+                });
+                if (!user) throw new Error('SignUp error: User.create!');
+
+                return {
+                    token: createToken(user, secret, '30m')
+                };
+            } catch (error) {
+                return error;
+            }
+
         },
         signIn: async (parent, {
-            login,
-            password
+            login: login,
+            password: password
         }, {
             models,
             secret
         }) => {
-            const user = await models.User.findByLogin(login);
+            try {
+                if (!login || !password) throw new UserInputError('Please enter your name(or email) and password to login');
 
-            if (!user) {
-                throw new UserInputError('No user found with this login.');
+                const user = await models.User.findByLogin(login);
+                if (!user) {
+                    throw new UserInputError('No user found with this login.');
+                }
+
+                const isValid = await user.validatePassword(password);
+
+                if (!isValid) {
+                    throw new AuthenticationError('Invalid password.');
+                }
+
+                return {
+                    token: createToken(user, secret, '30m')
+                }
+            } catch (error) {
+                return error;
             }
 
-            const isValid = await user.validatePassword(password);
-
-            if (!isValid) {
-                throw new AuthenticationError('Invalid password.');
-            }
-
-            return {
-                token: createToken(user, secret, '30m')
-            }
         },
         deleteUser: combineResolvers(
             isAuthenticated,
@@ -103,15 +124,21 @@ module.exports = {
             }, {
                 models
             }) => {
-                await models.User.update({
-                    role: role
-                }, {
-                    where: {
-                        id: id,
-                        name: name
-                    }
-                })
-                return 'Done'
+                try {
+                    if (!id || !name) throw new UserInputError('Fields id and name must be filled');
+
+                    await models.User.update({
+                        role: role
+                    }, {
+                        where: {
+                            id: id,
+                            name: name
+                        }
+                    })
+                    return 'Done'
+                } catch (error) {
+                    return error;
+                }
 
             },
         ),
