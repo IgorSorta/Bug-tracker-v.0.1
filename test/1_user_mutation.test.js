@@ -8,10 +8,9 @@ const {
 
 
 
-
+var TEST_USER;
+var token;
 describe('Testing User mutations (signUp, signIn, changeRole, deleteUser):', () => {
-    var TEST_USER;
-    var token;
     beforeAll(async () => {
         TEST_USER = await models.User.findOne({
             where: {
@@ -67,7 +66,7 @@ describe('Testing User mutations (signUp, signIn, changeRole, deleteUser):', () 
                 }
             `
         }, token);
-        console.log(test_mutation_3.data);
+
         expect(test_mutation_3).not.toBeNull();
         expect(test_mutation_3.status).toBe(200);
         expect(test_mutation_3.data).toHaveProperty('data.changeRole', 'Done');
@@ -93,6 +92,80 @@ describe('Testing User mutations (signUp, signIn, changeRole, deleteUser):', () 
         expect(test_mutation_4.data).toHaveProperty('data.deleteUser', true)
 
     });
+});
 
+describe('Testing mutations for errors:', () => {
+    const signUp_case = [
+        ['', 'john@mail.com', '123456789', 'User must provide name'],
+        ['John', '', '123456789', 'User must provide email'],
+        ['John', 'john@mail.com', '', 'User must provide password']
+    ];
 
+    test.each(signUp_case)('signUp >> should fail if input(name: %s, email: %s, password: %s) then result >>> %s', async (firstArg, secondArg, thirdArg, expectedResult) => {
+        const error_mutation = await getQuery({
+            query: `mutation {
+                    signUp(name: "${firstArg}", email: "${secondArg}", password: "${thirdArg}") {
+                      token
+                    }
+                  }
+            `
+        });
+
+        const error_data = {
+            ...error_mutation.data.errors[0]
+        };
+
+        expect(error_mutation.data.data).toBeNull();
+        expect(error_data.message).toContain(expectedResult)
+    });
+
+    const signIn_case = [
+        ['testUser', '', 'Please enter your name(or email) and password to login'],
+        ['', 'testtesttest', 'Please enter your name(or email) and password to login'],
+        ['wrong_user', 'testtesttest', 'No user found with this login.'],
+        ['testUser', 'wrong_password', 'Invalid password.']
+    ];
+
+    test.each(signIn_case)('signIn >> should fail if the input(name: %s, password: %s) then result >>> %s', async (firstArg, secondArg, expectedResult) => {
+        const error_mutation = await getQuery({
+            query: `mutation {
+                        signIn(login: "${firstArg}", password: "${secondArg}") {
+                            token
+                          }
+                      }
+                `
+        });
+
+        const error_data = {
+            ...error_mutation.data.errors[0]
+        };
+
+        expect(error_mutation.data.data).toBeNull();
+        expect(error_data.message).toContain(expectedResult)
+    });
+
+    // const changeRole_case = [
+    //     ['2bada0fe-a61d-445d-89a5-ecc5cdceb670', '', 'Fields id and name must be filled', 'ADMIN'],
+    //     ['', 'max', 'Fields id and name must be filled', `ADMIN`],
+    // ];
+
+    // test.each(changeRole_case)('', async (firstArg, secondArg, thirdArg, expectedResult) => {
+    //     const error_mutation = await getQuery({
+    //         query: `mutation {
+    //             changeRole(id: "${firstArg}", name: "${secondArg}", role: ${thirdArg}) {
+    //                         token
+    //                       }
+    //                   }
+    //             `
+    //     }, token);
+
+    //     const error_data = {
+    //         ...error_mutation.data.errors[0]
+    //     };
+
+    //     expect(error_mutation.data.data).toBeNull();
+    //     expect(error_data.message).toContain(expectedResult)
+    // });
+
+    test.todo('deleteUser');
 });
