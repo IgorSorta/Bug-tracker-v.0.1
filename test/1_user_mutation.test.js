@@ -144,28 +144,26 @@ describe('Testing mutations for errors:', () => {
         expect(error_data.message).toContain(expectedResult)
     });
 
-    // const changeRole_case = [
-    //     ['2bada0fe-a61d-445d-89a5-ecc5cdceb670', '', 'Fields id and name must be filled', 'ADMIN'],
-    //     ['', 'max', 'Fields id and name must be filled', `ADMIN`],
-    // ];
+    const deleteUser_case = [
+        ['', 'No user chosen for deletion.Select one.'],
+        ['d04bb000-cf43-4000-a00e-b8bc35645000', 'No user was found.'],
 
-    // test.each(changeRole_case)('', async (firstArg, secondArg, thirdArg, expectedResult) => {
-    //     const error_mutation = await getQuery({
-    //         query: `mutation {
-    //             changeRole(id: "${firstArg}", name: "${secondArg}", role: ${thirdArg}) {
-    //                         token
-    //                       }
-    //                   }
-    //             `
-    //     }, token);
+    ];
 
-    //     const error_data = {
-    //         ...error_mutation.data.errors[0]
-    //     };
+    test.each(deleteUser_case)('deleteUser >> should fail if input (id: %s) then result >>> %s', async (firstArg, expectedResult) => {
+        const error_mutation = await getQuery({
+            query: `
+                    mutation {
+                        deleteUser(id: "${firstArg}")
+                    }
+                `
+        }, token);
 
-    //     expect(error_mutation.data.data).toBeNull();
-    //     expect(error_data.message).toContain(expectedResult)
-    // });
+        const error_data = {
+            ...error_mutation.data.errors[0]
+        };
 
-    test.todo('deleteUser');
+        expect(error_mutation.data.data).toBeNull();
+        expect(error_data.message).toContain(expectedResult)
+    });
 });
