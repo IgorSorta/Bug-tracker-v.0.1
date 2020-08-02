@@ -2,7 +2,9 @@ const createToken = require('../helpers/createToken');
 
 const {
     AuthenticationError,
-    UserInputError
+    UserInputError,
+    ApolloError,
+    ForbiddenError
 } = require('apollo-server');
 const {
     combineResolvers
@@ -18,27 +20,50 @@ module.exports = {
             me,
             models
         }) => {
-            if (!me) {
-                return null;
+            try {
+                if (!me) {
+                    throw new ForbiddenError('You are not authenticated. Please login.');
+                }
+
+                const user = await models.User.findByPk(me.id);
+                if (!user) throw new ApolloError('No user was found.');
+
+                return user;
+            } catch (error) {
+                return error;
             }
 
-            return await models.User.findByPk(me.id);
         },
         user: async (parent, {
             id
         }, {
             models
         }) => {
-            return await models.User.findByPk(id);
+            try {
+                if (!id) throw new UserInputError('User must provide id');
+
+                const user = await models.User.findByPk(id);
+                if (!user) throw new ApolloError('No user was found.');
+
+                return user;
+            } catch (error) {
+                return error;
+            }
+
         },
         users: async (parent, args, {
             models
         }) => {
-            return await models.User.findAll({
-                order: [
-                    ["createdAt", "ASC"]
-                ]
-            });
+            try {
+                return await models.User.findAll({
+                    order: [
+                        ["createdAt", "ASC"]
+                    ]
+                });
+            } catch (error) {
+                return error;
+            }
+
         }
     },
     Mutation: {
@@ -107,11 +132,21 @@ module.exports = {
             }, {
                 models
             }) => {
-                return await models.User.destroy({
-                    where: {
-                        id: id
-                    },
-                });
+                try {
+                    if (!id) throw new UserInputError('No user chosen for deletion.Select one.');
+
+                    const user = await models.User.findByPk(id);
+                    if (!user) return new ApolloError('No user was found.');
+
+                    return await models.User.destroy({
+                        where: {
+                            id: id
+                        },
+                    });
+                } catch (error) {
+                    return error;
+                }
+
             }
         ),
         changeRole: combineResolvers(
@@ -127,6 +162,14 @@ module.exports = {
                 try {
                     if (!id || !name) throw new UserInputError('Fields id and name must be filled');
 
+                    const user = await models.User.findOne({
+                        where: {
+                            id: id,
+                            name: name
+                        }
+                    });
+                    if (!user) throw new ApolloError('No user was found.');
+
                     await models.User.update({
                         role: role
                     }, {
@@ -134,7 +177,7 @@ module.exports = {
                             id: id,
                             name: name
                         }
-                    })
+                    });
                     return 'Done'
                 } catch (error) {
                     return error;
