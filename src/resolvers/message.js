@@ -1,5 +1,8 @@
 const {
-    ForbiddenError
+    ForbiddenError,
+    AuthenticationError,
+    UserInputError,
+    ApolloError
 } = require('apollo-server');
 const {
     combineResolvers
@@ -14,14 +17,28 @@ module.exports = {
         messages: async (parent, args, {
             models
         }) => {
-            return await models.Message.findAll();
+            try {
+                return await models.Message.findAll();
+            } catch (error) {
+                return error;
+            }
+
         },
         message: async (parent, {
             id
         }, {
             models
         }) => {
-            return await models.Message.findByPk(id)
+            try {
+                if (!id) throw new UserInputError('User must provide message id');
+
+                const message = await models.Message.findByPk(id);
+                if (!message) throw new ApolloError('No message was found');
+
+                return message;
+            } catch (error) {
+                return error;
+            }
         },
     },
     Mutation: {
