@@ -1,14 +1,12 @@
-const axios = require('axios');
 const {
     models
 } = require('../src/models/index');
 
-const API_URL = 'http://localhost:4000/bug';
-const getQuery = async (query) => axios.post(API_URL,
-    query
-);
+const {
+    getQuery
+} = require('./helpers/test_Helpers')
 
-describe('Testing Message: query', () => {
+describe('Testing Message query(messages, message(id)):', () => {
     var usxxx;
     var message;
     beforeAll(async () => {
