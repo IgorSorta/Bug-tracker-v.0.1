@@ -51,13 +51,15 @@ module.exports = {
                 models
             }) => {
                 try {
+                    if (!text) throw new UserInputError('Input text to create message');
+
                     const newMess = await models.Message.create({
                         text: text,
                         userId: me.id,
                     });
                     return newMess;
                 } catch (error) {
-                    throw new Error(error);
+                    return error;
                 }
             }
         ),
@@ -69,11 +71,18 @@ module.exports = {
             }, {
                 models
             }) => {
-                return await models.Message.destroy({
-                    where: {
-                        id: id
-                    }
-                });
+                try {
+                    if (!id) throw new UserInputError('Input id to delete message');
+
+                    return await models.Message.destroy({
+                        where: {
+                            id: id
+                        }
+                    });
+                } catch (error) {
+                    return error;
+                }
+
             }
         ),
     },
@@ -81,7 +90,11 @@ module.exports = {
         user: async (message, args, {
             models
         }) => {
-            return await models.User.findByPk(message.userId);
+            try {
+                return await models.User.findByPk(message.userId);
+            } catch (error) {
+                return error;
+            }
         }
     },
 };
