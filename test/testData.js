@@ -18,7 +18,7 @@ module.exports = async (models, date) => {
 
         models.Bug.create({
             title: 'test title',
-            description: 'test bug ',
+            description: 'test bug',
             createdAt: date.setSeconds(date.getSeconds() + 1),
             userId: user.id,
         })
