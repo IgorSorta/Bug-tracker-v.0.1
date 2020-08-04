@@ -1,4 +1,10 @@
 const {
+    ForbiddenError,
+    AuthenticationError,
+    UserInputError,
+    ApolloError
+} = require('apollo-server');
+const {
     combineResolvers
 } = require('graphql-resolvers');
 const {
@@ -12,14 +18,32 @@ module.exports = {
         bugs: async (parent, args, {
             models
         }) => {
-            return await models.Bug.findAll()
+            try {
+                return await models.Bug.findAll({
+                    order: [
+                        ["createdAt", "ASC"]
+                    ]
+                });
+            } catch (error) {
+                return error;
+            }
+
         },
         bug: async (parent, {
             id
         }, {
             models
         }) => {
-            return await models.Bug.findByPk(id)
+            try {
+                if (!id) throw new UserInputError('User must provide bug id');
+
+                const bug = await models.Bug.findByPk(id);
+                if (!bug) throw new ApolloError('No bug was found');
+
+                return bug;
+            } catch (error) {
+                return error;
+            }
         },
 
     },
@@ -34,6 +58,8 @@ module.exports = {
                 models
             }) => {
                 try {
+                    if (!title || !description) throw new UserInputError('Bug message must contain title and description');
+
                     const newBug = await models.Bug.create({
                         title,
                         description,
@@ -41,7 +67,7 @@ module.exports = {
                     }, );
                     return newBug;
                 } catch (error) {
-                    throw new Error(error);
+                    return error;
                 }
             }
         ),
@@ -53,14 +79,21 @@ module.exports = {
             }, {
                 models
             }) => {
-                await models.Bug.update({
-                    status: status
-                }, {
-                    where: {
-                        id: id
-                    }
-                });
-                return 'Status changed.'
+                try {
+                    if (!id) throw new UserInputError('Input id to change bug status');
+
+                    await models.Bug.update({
+                        status: status
+                    }, {
+                        where: {
+                            id: id
+                        }
+                    });
+                    return 'Status changed.'
+                } catch (error) {
+                    return error;
+                }
+
             }
         ),
         setPriority: combineResolvers(
@@ -71,14 +104,18 @@ module.exports = {
             }, {
                 models
             }) => {
-                await models.Bug.update({
-                    priority: priority
-                }, {
-                    where: {
-                        id: id
-                    }
-                });
-                return 'DONE'
+                try {
+                    await models.Bug.update({
+                        priority: priority
+                    }, {
+                        where: {
+                            id: id
+                        }
+                    });
+                    return 'DONE'
+                } catch (error) {
+                    return error;
+                }
             }
         ),
         deleteBug: combineResolvers(
@@ -89,11 +126,18 @@ module.exports = {
             }, {
                 models
             }) => {
-                return await models.Bug.destroy({
-                    where: {
-                        id
-                    }
-                });
+                try {
+                    if (!id) throw new UserInputError('Input id to delete bug');
+
+                    return await models.Bug.destroy({
+                        where: {
+                            id
+                        }
+                    });
+                } catch (error) {
+                    return error;
+                }
+
             },
         )
     },

@@ -18,7 +18,11 @@ module.exports = {
             models
         }) => {
             try {
-                return await models.Message.findAll();
+                return await models.Message.findAll({
+                    order: [
+                        ["createdAt", "ASC"]
+                    ]
+                });
             } catch (error) {
                 return error;
             }
