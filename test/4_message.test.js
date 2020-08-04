@@ -1,7 +1,6 @@
 const {
     models
 } = require('../src/models/index');
-
 const {
     getQuery
 } = require('./helpers/test_Helpers')
@@ -82,14 +81,14 @@ describe('Testing Message query(messages, message(id)):', () => {
     });
 });
 
-describe('Testing if Message query is invalid: ', () => {
+describe('Testing Message query for errors if input is invalid:', () => {
 
     const messageId_case = [
         ['', 'User must provide message id'],
         ['d04bb000-cf43-4000-a00e-b8bc35645000', 'No message was found']
     ];
 
-    test.each(messageId_case)('message(id) >> should fail if the query(id: %s) then result >>> %s', async (firstArg, expectedResult) => {
+    test.each(messageId_case)('message(id) >> should fail if the input (id: %s) then result >>> %s', async (firstArg, expectedResult) => {
 
         const error_result = await getQuery({
             query: `query {
