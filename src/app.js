@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 const {
     ApolloServer
@@ -13,13 +12,15 @@ const {
 } = require('./models/index');
 const getMe = require('./helpers/getMe');
 
+// *Define app
 const app = express();
+// *Define server
 const server = new ApolloServer({
-    typeDefs: schema,
-    resolvers,
+    typeDefs: schema, // *user, message, bug schemas
+    resolvers, // *query and mutation resolvers
     formatError: error => {
-        // remove the internal sequelize error message
-        // leave only the important validation error
+        // *remove the internal sequelize error message
+        // *leave only the important validation error
         const message = error.message
             .replace('SequelizeValidationError: ', '')
             .replace('Validation error: ', '');
@@ -32,6 +33,7 @@ const server = new ApolloServer({
     context: async ({
         req
     }) => {
+        // *Gets user from token
         const me = await getMe(req);
 
         return {
@@ -42,19 +44,23 @@ const server = new ApolloServer({
     },
 
 });
-
+// *Integrate middleware
 server.applyMiddleware({
     app,
     path: '/bug'
 });
 
+// !Reset database and request testData(only for testing)
 let eraseDatabaseOnSync = true;
+const testData = require('../test/testData');
 
+// *Connect to database(MySQL)
 sequelize.sync({
     force: eraseDatabaseOnSync
 }).then(async () => {
 
-    createFakeData(models);
+    // !createFakeData(models, new Date());
+    testData(models, new Date());
 
     app.listen({
         port: 4000
@@ -62,27 +68,3 @@ sequelize.sync({
         console.log('Apollo Server on http://localhost:4000/bug');
     });
 });
-
-//
-async function createFakeData(models) {
-    await models.User.create({
-        id: 1,
-        name: 'janedoe',
-        email: 'jan@mail.com',
-        role: 'ADMIN',
-        password: 'janedoe'
-    }, {
-        includes: [models.Message, models.Bug]
-    }).then((user) => {
-        models.Message.create({
-            text: 'after erase message',
-            userId: user.id,
-        });
-
-        models.Bug.create({
-            title: 'Fake title erase',
-            description: 'Fake bug description after erase',
-            userId: user.id,
-        })
-    });
-}

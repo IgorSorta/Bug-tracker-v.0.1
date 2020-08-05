@@ -1,5 +1,6 @@
-const createToken = require('../helpers/createToken');
+'use strict';
 
+const createToken = require('../helpers/createToken');
 const {
     AuthenticationError,
     UserInputError,
@@ -16,14 +17,14 @@ const {
 
 module.exports = {
     Query: {
+        // *Get current logged in user
         me: async (parent, args, {
             me,
             models
         }) => {
             try {
-                if (!me) {
-                    throw new ForbiddenError('You are not authenticated. Please login.');
-                }
+                // If token is not valid
+                if (!me) throw new ForbiddenError('You are not authenticated. Please login.');
 
                 const user = await models.User.findByPk(me.id);
                 if (!user) throw new ApolloError('No user was found.');
@@ -34,12 +35,14 @@ module.exports = {
             }
 
         },
+        // *Get user where id is (uuidv4)
         user: async (parent, {
             id
         }, {
             models
         }) => {
             try {
+                // Check id is exist
                 if (!id) throw new UserInputError('User must provide id');
 
                 const user = await models.User.findByPk(id);
@@ -51,6 +54,7 @@ module.exports = {
             }
 
         },
+        // *Get all users from DB
         users: async (parent, args, {
             models
         }) => {
@@ -67,6 +71,7 @@ module.exports = {
         }
     },
     Mutation: {
+        // *Register user and return token
         signUp: async (parent, {
             name,
             email,
@@ -95,6 +100,7 @@ module.exports = {
             }
 
         },
+        // *Login user (and return token)
         signIn: async (parent, {
             login: login,
             password: password
@@ -105,12 +111,12 @@ module.exports = {
             try {
                 if (!login || !password) throw new UserInputError('Please enter your name(or email) and password to login');
 
-                const user = await models.User.findByLogin(login);
+                const user = await models.User.findByLogin(login); // find user in DB
                 if (!user) {
                     throw new UserInputError('No user found with this login.');
                 }
 
-                const isValid = await user.validatePassword(password);
+                const isValid = await user.validatePassword(password); // check password
 
                 if (!isValid) {
                     throw new AuthenticationError('Invalid password.');
@@ -124,9 +130,10 @@ module.exports = {
             }
 
         },
-        deleteUser: combineResolvers(
-            isAuthenticated,
-            isAdmin,
+        // *Delete user with id(uuidv4)
+        deleteUser: combineResolvers( // helps compose middleware
+            isAuthenticated, // check if user is logged in
+            isAdmin, // check if user is in Admin role
             async (parent, {
                 id
             }, {
@@ -149,6 +156,7 @@ module.exports = {
 
             }
         ),
+        // *Chage user role(USER, ADMIN)
         changeRole: combineResolvers(
             isAuthenticated,
             isAdmin,
@@ -186,6 +194,7 @@ module.exports = {
             },
         ),
     },
+    // If user requested with nested queries
     User: {
         messages: async (user, args, {
             models

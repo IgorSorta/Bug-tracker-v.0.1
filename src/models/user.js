@@ -9,7 +9,9 @@ const Message = require('./message');
 const Bug = require('./bug');
 const createUUID = require('../helpers/createUUID');
 
+// *Extends base Model by User
 class User extends Model {
+    // *Create new methods
     async generatePasswordHash() {
         const salt = 10;
         return await bcrypt.hash(this.password, salt);
@@ -19,6 +21,7 @@ class User extends Model {
         return await bcrypt.compare(password, this.password);
     }
 }
+// *Define model attributes(see Sequilize doc.)
 User.init({
     id: {
         type: DataTypes.UUID,
@@ -74,7 +77,7 @@ User.init({
     sequelize: sequelize,
     modelName: 'user'
 });
-
+// create method that find user in DB when login
 User.findByLogin = async (login) => {
     try {
         let user = await User.findOne({
@@ -84,7 +87,7 @@ User.findByLogin = async (login) => {
             include: [Message, Bug]
         });
 
-        if (!user) {
+        if (!user || user === undefined) {
             user = await User.findOne({
                 where: {
                     email: login

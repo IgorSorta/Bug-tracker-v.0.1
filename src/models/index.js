@@ -4,6 +4,7 @@ const User = require('./user');
 const Message = require('./message');
 const Bug = require('./bug');
 
+// *Gather all models, associat them (see Sequelize doc.) and export
 User.hasMany(Message);
 User.hasMany(Bug);
 

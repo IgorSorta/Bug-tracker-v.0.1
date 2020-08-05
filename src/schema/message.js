@@ -1,7 +1,8 @@
 const {
     gql
 } = require('apollo-server-express');
-// TODO pagination
+
+// *Message schema definition
 const message = gql `
   extend type Query {
     messages: [Message!]!

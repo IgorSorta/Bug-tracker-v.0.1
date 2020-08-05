@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-
+// *Create jwt token with payload
 module.exports = async (user, secret, expiresIn) => {
     const {
         id,

@@ -2,6 +2,7 @@ const {
     gql
 } = require('apollo-server-express');
 
+// *Bug schema definition
 const bug = gql `
 extend type Query {
   bugs: [Bug!]

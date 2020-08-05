@@ -6,6 +6,7 @@ const userSchema = require('./user');
 const messageSchema = require('./message');
 const bugSchema = require('./bug');
 
+// *Gather all schemas and export them
 const linkSchema = gql `
   scalar Date
 

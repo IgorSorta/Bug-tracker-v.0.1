@@ -5,6 +5,7 @@ const {
     GraphQLDateTime
 } = require('graphql-iso-date');
 
+// *Gather all resolvers and export
 const customScalarResolver = {
     Date: GraphQLDateTime
 };

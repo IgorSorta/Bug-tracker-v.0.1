@@ -5,8 +5,9 @@ const {
 
 const sequelize = require('./sequelize');
 const createUUID = require('../helpers/createUUID');
-
+// *Extends base Model by Bug
 class Bug extends Model {}
+// *Define model attributes(see Sequilize doc.)
 Bug.init({
     id: {
         type: DataTypes.UUID,

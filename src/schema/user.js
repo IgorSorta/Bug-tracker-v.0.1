@@ -2,6 +2,7 @@ const {
     gql
 } = require('apollo-server-express');
 
+// *User schema definition
 const user = gql `
 extend type Query {
   users: [User!]

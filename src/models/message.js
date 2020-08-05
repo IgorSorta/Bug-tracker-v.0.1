@@ -5,7 +5,9 @@ const {
 const sequelize = require('./sequelize');
 const createUUID = require('../helpers/createUUID');
 
+// *Extends base Model by Message
 class Message extends Model {}
+// *Define model attributes(see Sequilize doc.)
 Message.init({
     id: {
         type: DataTypes.UUID,

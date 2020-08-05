@@ -13,6 +13,7 @@ const {
 } = require('./authorization');
 
 module.exports = {
+    // *Get all messages in DB
     Query: {
         messages: async (parent, args, {
             models
@@ -28,6 +29,7 @@ module.exports = {
             }
 
         },
+        // *Get message by its id(uuidv4)
         message: async (parent, {
             id
         }, {
@@ -46,6 +48,7 @@ module.exports = {
         },
     },
     Mutation: {
+        // *Create new message
         createMessage: combineResolvers(
             isAuthenticated,
             async (parent, {
@@ -69,7 +72,7 @@ module.exports = {
         ),
         deleteMessage: combineResolvers(
             isAuthenticated,
-            isMessageOwner,
+            isMessageOwner, // Check if it message creator then ...
             async (parent, {
                 id
             }, {
@@ -91,6 +94,7 @@ module.exports = {
         ),
     },
     Message: {
+        // if request message with user data
         user: async (message, args, {
             models
         }) => {

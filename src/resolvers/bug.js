@@ -14,7 +14,7 @@ const {
 
 module.exports = {
     Query: {
-
+        // *Get all bugs from DB
         bugs: async (parent, args, {
             models
         }) => {
@@ -29,6 +29,7 @@ module.exports = {
             }
 
         },
+        // *Get bug by its id(uuidv4)
         bug: async (parent, {
             id
         }, {
@@ -48,6 +49,7 @@ module.exports = {
 
     },
     Mutation: {
+        // *Create new bug ticket
         createBug: combineResolvers(
             isAuthenticated,
             async (parent, {
@@ -71,6 +73,7 @@ module.exports = {
                 }
             }
         ),
+        // *Change bug ticket status (see bug schema def.)
         changeStatus: combineResolvers(
             isAuthenticated,
             async (parent, {
@@ -96,6 +99,7 @@ module.exports = {
 
             }
         ),
+        // *Set bug ticket priority (see bug schema def.)
         setPriority: combineResolvers(
             isAuthenticated,
             async (parent, {
@@ -118,9 +122,10 @@ module.exports = {
                 }
             }
         ),
+        // *Delete bug ticket by its id(uuidv5)
         deleteBug: combineResolvers(
             isAuthenticated,
-            isBugOwner,
+            isBugOwner, // check if it bug ticket creator
             async (parent, {
                 id
             }, {
@@ -143,6 +148,7 @@ module.exports = {
     },
 
     Bug: {
+        // if requested bug with user data
         user: async (bug, args, {
             models
         }) => {

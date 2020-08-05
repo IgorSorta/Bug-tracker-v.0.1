@@ -3,6 +3,7 @@ const {
     AuthenticationError
 } = require('apollo-server-express');
 
+// *If jwt token is valid then return its payload
 module.exports = async (req) => {
     const token = req.headers["authorization"] || ''
 
