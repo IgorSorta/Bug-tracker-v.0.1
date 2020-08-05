@@ -1,15 +1,15 @@
 {
     "name": "bug-tracker",
-    "version": "1.0.0",
+    "version": "0.1",
     "description": "Bug tracker web application",
     "main": "app.js",
     "scripts": {
         "start": "nodemon src/app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "keywords": [],
     "author": "Igor K",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "apollo-server": "^2.15.1",
         "apollo-server-express": "^2.15.1",
@@ -23,5 +23,9 @@
         "mysql2": "^2.1.0",
         "sequelize": "^6.3.3",
         "uuid": "^8.2.0"
+    },
+    "devDependencies": {
+        "axios": "^0.19.2",
+        "jest": "^26.1.0"
     }
 }
