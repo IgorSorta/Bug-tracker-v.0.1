@@ -1,4 +1,6 @@
 const createUUID = require('../src/helpers/createUUID');
+
+// *Create testUser for tests
 module.exports = async (models, date) => {
     await models.User.create({
         id: createUUID(),
